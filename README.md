@@ -41,7 +41,7 @@ cp .env.example .env
 
 Replace the values of the variables with your actual and correct value. 
 
-NOTE: The recent models of OpenAI were used in this project and the newest endpoints of the OpenAI were used. 
+NOTE: The recent models of OpenAI were used in this project and the latest endpoints of the OpenAI were used. 
 
 ### Run the Server
 
