@@ -1,3 +1,4 @@
+import Message from "../model/message.model";
 import logger from "../utils/logger";
 import OpenAIService from "../utils/services/open-ai";
 
@@ -40,6 +41,13 @@ class ChatService {
         );
       }
 
+      //save the message  and response to the db
+      this.createMessage({
+        response: generatedResponse.replace(/<[^>]*>/g, "").trim(),
+        prompt: message,
+        followUpQuestions: follow_up_questions,
+      });
+
       return {
         status: "success",
         message: "Successful.",
@@ -47,6 +55,121 @@ class ChatService {
           response: generatedResponse.replace(/<[^>]*>/g, "").trim(),
           follow_up_questions,
         },
+      };
+    } catch (error: any) {
+      console.error(error);
+      logger(module).error(
+        JSON.stringify({ message: error?.message, stack: error?.stack })
+      );
+      return {
+        status: "failed",
+        message: "An error occurred",
+      };
+    }
+  }
+
+  static async createMessage(payload: {
+    prompt: string;
+    response: string;
+    followUpQuestions: string[];
+  }) {
+    try {
+      //save the message to the db
+      const { prompt, response, followUpQuestions } = payload;
+
+      const newMessage = await Message.create({
+        prompt,
+        response,
+        followUpQuestions,
+      });
+
+      return {
+        status: true,
+        message: "message saved successfully",
+      };
+    } catch (error) {
+      console.log(error);
+      return { status: false, message: "failed to save new message" };
+    }
+  }
+
+  static async fetchMessages(payload: {
+    message: string;
+  }): Promise<ServiceResponseInterface<{}>> {
+    try {
+      const messages = await Message.findAll({ where: {} });
+
+      return {
+        status: "success",
+        message: "Successful.",
+        data: { messages },
+      };
+    } catch (error: any) {
+      console.error(error);
+      logger(module).error(
+        JSON.stringify({ message: error?.message, stack: error?.stack })
+      );
+      return {
+        status: "failed",
+        message: "An error occurred",
+      };
+    }
+  }
+
+  static async fetchSingleMessage(payload: {
+    id: string;
+  }): Promise<ServiceResponseInterface<{}>> {
+    try {
+      const { id } = payload;
+
+      const message = await Message.findOne({ where: { id } });
+
+      if (!message) {
+        return {
+          status: "failed",
+          message: "Message does not exist",
+        };
+      }
+
+      return {
+        status: "success",
+        message: "Successful.",
+        data: { message },
+      };
+    } catch (error: any) {
+      console.error(error);
+      logger(module).error(
+        JSON.stringify({ message: error?.message, stack: error?.stack })
+      );
+      return {
+        status: "failed",
+        message: "An error occurred",
+      };
+    }
+  }
+
+  static async updateSingleMessage(payload: {
+    id: string;
+    response: string;
+  }): Promise<ServiceResponseInterface<{}>> {
+    try {
+      const { id, response } = payload;
+
+      const message = await Message.findOne({ where: { id } });
+
+      if (!message) {
+        return {
+          status: "failed",
+          message: "Message does not exist",
+        };
+      }
+
+      await Message.update({ response }, { where: { id: Number(id) } });
+
+      return {
+        status: "success",
+        message: "Successful.",
+        data: { message },
       };
     } catch (error: any) {
       console.error(error);
