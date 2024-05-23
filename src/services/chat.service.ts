@@ -71,7 +71,7 @@ class ChatService {
   static async createMessage(payload: {
     prompt: string;
     response: string;
-    followUpQuestions: string[];
+    followUpQuestions: { question: string }[];
   }) {
     try {
       //save the message to the db
@@ -94,7 +94,8 @@ class ChatService {
   }
 
   static async fetchMessages(payload: {
-    message: string;
+    page?: string;
+    perPage?: string;
   }): Promise<ServiceResponseInterface<{}>> {
     try {
       const messages = await Message.findAll({ where: {} });

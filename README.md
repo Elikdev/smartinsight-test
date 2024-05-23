@@ -3,10 +3,15 @@ This project is a Node.js (Express) and TypeScript-based API for an AI software 
 
 ## Features
 
-- Accepts a user message and generates a response
-- Suggests four follow-up questions based on the user message and generated response
-- Built with Node.js, Express, and TypeScript
-- Utilizes OpenAI API for generating responses
+- [x] Accepts a user message and generates a response
+- [x] Suggests four follow-up questions based on the user message and generated response
+- [x] Built with Node.js, Express, and TypeScript
+- [x] Utilizes OpenAI API for generating responses
+- [x] Save the messages, responses and follow up questions to a database
+- [x] Fetch all messages from a database through a protected route
+- [x] Update a response through a protected route
+- [ ] Validate the input for all the endpoints using Joi
+- [ ] Improve the prompt for generating response
 
 ## Prerequisites
 
